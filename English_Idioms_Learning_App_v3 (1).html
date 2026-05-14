@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Idioms Practice — 중학교 3학년</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #F0F4F7; color: #1C2B4A; min-height: 100vh; }
+
+/* HEADER */
+.header { background: #028090; color: white; padding: 16px 24px 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.header-left h1 { font-size: 19px; font-weight: 700; }
+.header-left p { font-size: 12px; opacity: 0.82; margin-top: 2px; }
+.header-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.player-badge { background: rgba(255,255,255,0.18); border: 1.5px solid rgba(255,255,255,0.4); border-radius: 999px; padding: 5px 14px; font-size: 13px; font-weight: 600; color: white; cursor: pointer; white-space: nowrap; }
+.player-badge:hover { background: rgba(255,255,255,0.28); }
+.score-badge { background: #02C39A; border-radius: 999px; padding: 5px 14px; font-size: 13px; font-weight: 700; color: #012E26; white-space: nowrap; }
+
+/* SETUP MODAL */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.modal { background: white; border-radius: 16px; padding: 28px 24px; max-width: 420px; width: 100%; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+.modal h2 { font-size: 20px; font-weight: 700; color: #028090; margin-bottom: 6px; }
+.modal p { font-size: 13px; color: #666; margin-bottom: 18px; }
+.modal label { font-size: 13px; font-weight: 600; color: #1C2B4A; display: block; margin-bottom: 5px; }
+.modal input, .modal select { width: 100%; padding: 9px 12px; border-radius: 8px; border: 1.5px solid #CCDDDF; font-size: 14px; margin-bottom: 14px; font-family: inherit; outline: none; }
+.modal input:focus, .modal select:focus { border-color: #028090; }
+.group-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+.group-row input { margin-bottom: 0; flex: 1; }
+.group-row .del-btn { background: #FDECEA; border: none; color: #C0392B; border-radius: 6px; width: 32px; height: 36px; cursor: pointer; font-size: 16px; flex-shrink: 0; }
+.add-group-btn { background: #E1F5F7; border: 1.5px dashed #028090; color: #028090; border-radius: 8px; padding: 8px; width: 100%; font-size: 13px; font-weight: 600; cursor: pointer; margin-bottom: 14px; }
+.modal-footer { display: flex; gap: 8px; margin-top: 4px; }
+.btn { padding: 9px 22px; border-radius: 8px; border: 1.5px solid #CCDDDF; background: white; color: #1C2B4A; font-size: 14px; cursor: pointer; font-weight: 500; font-family: inherit; }
+.btn:hover { background: #F0F4F7; }
+.btn-teal { background: #028090; color: white; border-color: #028090; }
+.btn-teal:hover { background: #01606E; }
+.btn-full { width: 100%; }
+
+/* SCOREBOARD */
+.scoreboard { background: white; border-radius: 12px; border: 1px solid #DDE4E8; padding: 16px; margin-bottom: 18px; }
+.scoreboard-title { font-size: 13px; font-weight: 700; color: #028090; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+.sb-reset { font-size: 11px; color: #C0392B; cursor: pointer; font-weight: 600; background: #FDECEA; border: none; border-radius: 6px; padding: 3px 10px; font-family: inherit; }
+.sb-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.sb-tab { padding: 5px 14px; border-radius: 999px; border: 1.5px solid #CCDDDF; background: white; color: #666; font-size: 12px; font-weight: 600; cursor: pointer; }
+.sb-tab.active { background: #028090; color: white; border-color: #028090; }
+.sb-list { display: flex; flex-direction: column; gap: 6px; }
+.sb-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; background: #F5F8FA; }
+.sb-rank { width: 24px; height: 24px; border-radius: 50%; background: #E1F5F7; color: #028090; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sb-rank.gold { background: #FFF4DC; color: #A07000; }
+.sb-rank.silver { background: #EEF0F2; color: #606870; }
+.sb-rank.bronze { background: #FDEEE6; color: #8B4513; }
+.sb-name { flex: 1; font-size: 14px; font-weight: 600; color: #1C2B4A; }
+.sb-score { font-size: 15px; font-weight: 700; color: #028090; }
+.sb-detail { font-size: 11px; color: #999; margin-left: 2px; }
+.sb-empty { text-align: center; padding: 14px; font-size: 13px; color: #AAA; }
+
+/* APP */
+.app { max-width: 780px; margin: 0 auto; padding: 18px 16px; }
+.nav { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+.nav-btn { padding: 8px 18px; border-radius: 999px; border: 1.5px solid #028090; background: white; color: #028090; font-size: 14px; cursor: pointer; font-weight: 500; }
+.nav-btn:hover { background: #E1F5F7; }
+.nav-btn.active { background: #028090; color: white; }
+.section { display: none; }
+.section.active { display: block; }
+
+/* LIST */
+.list-search { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1.5px solid #CCDDDF; font-size: 14px; margin-bottom: 12px; outline: none; font-family: inherit; }
+.list-search:focus { border-color: #028090; }
+.idiom-row { display: flex; align-items: flex-start; gap: 12px; padding: 11px 14px; border-radius: 8px; border: 1px solid #DDE4E8; margin-bottom: 6px; background: white; }
+.idiom-num { min-width: 28px; height: 28px; border-radius: 50%; background: #E1F5F7; color: #028090; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+.idiom-text { font-size: 15px; font-weight: 600; color: #1C2B4A; }
+.idiom-ko { font-size: 13px; color: #555; margin-top: 2px; }
+.idiom-ex { font-size: 12px; color: #888; margin-top: 4px; font-style: italic; }
+
+/* FLASHCARD */
+.fc-progress { font-size: 13px; color: #666; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+.fc-wrap { perspective: 900px; margin-bottom: 14px; }
+.fc-card { width: 100%; height: 210px; position: relative; transform-style: preserve-3d; transition: transform 0.45s; cursor: pointer; }
+.fc-card.flipped { transform: rotateY(180deg); }
+.fc-front, .fc-back { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; }
+.fc-front { background: #028090; color: white; }
+.fc-back { background: white; border: 2px solid #028090; transform: rotateY(180deg); }
+.fc-idiom { font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 10px; }
+.fc-hint { font-size: 13px; opacity: 0.75; }
+.fc-meaning { font-size: 20px; font-weight: 600; color: #1C2B4A; text-align: center; margin-bottom: 8px; }
+.fc-example { font-size: 13px; color: #666; text-align: center; font-style: italic; }
+.fc-controls { display: flex; gap: 10px; justify-content: center; }
+
+/* QUIZ */
+.activity-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+.activity-header-left { font-size: 13px; color: #666; display: flex; gap: 16px; }
+.score-val { font-weight: 700; color: #028090; }
+.player-select-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.player-select-row label { font-size: 12px; color: #666; font-weight: 600; }
+.player-select-row select { padding: 5px 10px; border-radius: 8px; border: 1.5px solid #CCDDDF; font-size: 13px; font-family: inherit; outline: none; background: white; }
+.quiz-q { background: white; border-radius: 12px; padding: 18px; margin-bottom: 14px; border: 1px solid #DDE4E8; }
+.quiz-type { font-size: 11px; color: #028090; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+.quiz-qtext { font-size: 17px; font-weight: 600; color: #1C2B4A; line-height: 1.5; }
+.quiz-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+.quiz-opt { padding: 11px 14px; border-radius: 8px; border: 1.5px solid #DDE4E8; background: white; color: #1C2B4A; font-size: 13px; cursor: pointer; text-align: left; transition: all 0.12s; font-family: inherit; }
+.quiz-opt:hover:not(:disabled) { background: #E1F5F7; border-color: #028090; }
+.quiz-opt.correct { background: #D6F0E3; border-color: #1A7A4A; color: #1A4A2E; }
+.quiz-opt.wrong { background: #FDECEA; border-color: #C0392B; color: #7A1C14; }
+.quiz-feedback { font-size: 13px; margin-top: 10px; padding: 8px 12px; border-radius: 8px; display: none; font-weight: 500; }
+.quiz-feedback.show { display: block; }
+.quiz-feedback.ok { background: #D6F0E3; color: #1A4A2E; }
+.quiz-feedback.no { background: #FDECEA; color: #7A1C14; }
+.result-box { text-align: center; padding: 2rem 1rem; background: white; border-radius: 12px; border: 1px solid #DDE4E8; }
+.result-score-big { font-size: 52px; font-weight: 700; color: #028090; }
+.result-msg { font-size: 16px; color: #555; margin-top: 8px; }
+.result-saved { font-size: 13px; color: #1A7A4A; margin-top: 10px; font-weight: 600; background: #D6F0E3; border-radius: 8px; padding: 8px 14px; display: inline-block; }
+
+/* MATCH */
+.match-info { font-size: 13px; color: #666; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+.match-info strong { color: #028090; }
+.match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.match-col-title { font-size: 12px; font-weight: 700; color: #028090; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; text-align: center; }
+.match-card { padding: 10px 12px; border-radius: 8px; border: 1.5px solid #DDE4E8; background: white; color: #1C2B4A; font-size: 13px; cursor: pointer; text-align: center; transition: all 0.15s; min-height: 46px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; line-height: 1.4; }
+.match-card:hover { background: #E1F5F7; }
+.match-card.selected { border-color: #028090; background: #E1F5F7; color: #028090; font-weight: 600; }
+.match-card.matched { border-color: #1A7A4A; background: #D6F0E3; color: #1A4A2E; cursor: default; font-weight: 600; }
+.match-card.wrong-flash { border-color: #C0392B; background: #FDECEA; }
+.match-done { text-align: center; padding: 14px; font-size: 16px; color: #028090; font-weight: 600; background: #E1F5F7; border-radius: 8px; margin-top: 10px; }
+
+/* SCORE POPUP */
+.score-popup { position: fixed; top: 72px; right: 20px; background: #028090; color: white; border-radius: 12px; padding: 12px 18px; font-size: 15px; font-weight: 700; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; box-shadow: 0 4px 16px rgba(0,0,0,0.18); }
+.score-popup.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- Score popup -->
+<div class="score-popup" id="score-popup"></div>
+
+<!-- Setup Modal -->
+<div class="modal-bg" id="setup-modal">
+  <div class="modal">
+    <h2>👋 시작 설정</h2>
+    <p>학생 이름과 모둠을 입력하고 시작하세요!</p>
+
+    <label>내 이름</label>
+    <input type="text" id="input-name" placeholder="이름을 입력하세요" maxlength="20">
+
+    <label>내 모둠 선택</label>
+    <select id="input-group">
+      <option value="">-- 모둠을 선택하세요 --</option>
+    </select>
+
+    <label style="margin-top:4px">모둠 목록 편집</label>
+    <div id="group-list"></div>
+    <button class="add-group-btn" onclick="addGroupInput()">+ 모둠 추가</button>
+
+    <div class="modal-footer">
+      <button class="btn btn-teal btn-full" onclick="startSession()">시작하기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <h1>English Idioms Practice</h1>
+    <p>24 Common English Idioms — 중학교 3학년</p>
+  </div>
+  <div class="header-right">
+    <div class="player-badge" onclick="showSetup()" id="player-name-badge">👤 설정</div>
+    <div class="score-badge" id="header-score">⭐ 0점</div>
+  </div>
+</div>
+
+<div class="app">
+  <!-- Scoreboard -->
+  <div class="scoreboard">
+    <div class="scoreboard-title">
+      <span>🏆 점수판</span>
+      <button class="sb-reset" onclick="resetScores()">초기화</button>
+    </div>
+    <div class="sb-tabs">
+      <button class="sb-tab active" onclick="switchSbTab(this,'individual')">개인</button>
+      <button class="sb-tab" onclick="switchSbTab(this,'group')">모둠</button>
+    </div>
+    <div id="sb-content" class="sb-list"></div>
+  </div>
+
+  <!-- Nav -->
+  <div class="nav">
+    <button class="nav-btn active" onclick="switchTab(this,'list')">📋 전체 목록</button>
+    <button class="nav-btn" onclick="switchTab(this,'flash')">🃏 플래시카드</button>
+    <button class="nav-btn" onclick="switchTab(this,'quiz')">✏️ 퀴즈 (+점수)</button>
+    <button class="nav-btn" onclick="switchTab(this,'match')">🔗 매칭 게임 (+점수)</button>
+  </div>
+
+  <div id="tab-list" class="section active"></div>
+  <div id="tab-flash" class="section"></div>
+  <div id="tab-quiz" class="section"></div>
+  <div id="tab-match" class="section"></div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   DATA
+═══════════════════════════════════════ */
+const idioms = [
+  { id:1,  en:"I'm in hot water",                ko:"곤경에 처해 있다",                      ex:"I'm in hot water because I forgot my homework again." },
+  { id:2,  en:"Break a leg",                     ko:"행운을 빌다",                            ex:"Break a leg at your audition today!" },
+  { id:3,  en:"Keep my fingers crossed",         ko:"잘 되기를 바라다",                       ex:"I'll keep my fingers crossed for your exam." },
+  { id:4,  en:"We see eye to eye",               ko:"의견이 일치하다",                         ex:"We don't always see eye to eye, but we're good friends." },
+  { id:5,  en:"It's raining cats and dogs",      ko:"비가 억수같이 쏟아진다",                 ex:"Take an umbrella — it's raining cats and dogs!" },
+  { id:6,  en:"Don't make a long face",          ko:"시무룩한 표정 짓지 마",                  ex:"Don't make a long face — everything will be fine." },
+  { id:7,  en:"You're pulling my leg",           ko:"나를 놀리는 거지? / 농담이지?",          ex:"You got 100% on every test? You're pulling my leg!" },
+  { id:8,  en:"It's on me",                      ko:"내가 계산할게",                           ex:"Put your wallet away — it's on me tonight." },
+  { id:9,  en:"I have butterflies in my stomach",ko:"긴장되어 배가 간질간질하다",             ex:"I have butterflies in my stomach before every performance." },
+  { id:10, en:"I'll keep in touch",              ko:"연락하고 지낼게",                         ex:"Even though you're moving, I'll keep in touch." },
+  { id:11, en:"It's a piece of cake",            ko:"아주 쉬운 일이다",                        ex:"This math problem is a piece of cake!" },
+  { id:12, en:"Hit the books",                   ko:"공부하다",                                ex:"You should hit the books if you want to pass." },
+  { id:13, en:"It costs an arm and a leg",       ko:"엄청나게 비싸다",                         ex:"That designer bag costs an arm and a leg." },
+  { id:14, en:"A doggie bag",                    ko:"남은 음식을 싸가는 봉투",                 ex:"I need a doggie bag — I couldn't finish my meal." },
+  { id:15, en:"It's a pie in the sky",           ko:"그림의 떡, 실현 불가능한 꿈",             ex:"Becoming a billionaire overnight is a pie in the sky." },
+  { id:16, en:"It's a lemon",                    ko:"불량품, 고장 잘 나는 물건",               ex:"My new car keeps breaking down — it's a total lemon." },
+  { id:17, en:"I'm on cloud nine",               ko:"매우 행복하다, 하늘을 나는 기분",          ex:"I'm on cloud nine — I got into my dream school!" },
+  { id:18, en:"It's a white elephant",           ko:"쓸모없는 애물단지",                       ex:"That old machine is a white elephant nobody wants." },
+  { id:19, en:"I go bananas",                    ko:"매우 흥분하다 / 미칠 것 같다",            ex:"I go bananas when my internet keeps cutting out." },
+  { id:20, en:"Let's hang out",                  ko:"놀자, 어울리자",                          ex:"We should hang out this weekend!" },
+  { id:21, en:"A busy bee",                      ko:"항상 바쁘게 일하는 사람",                 ex:"My dad is a busy bee — he never stops working." },
+  { id:22, en:"I'm all ears",                    ko:"듣고 있어, 말해봐",                       ex:"Tell me what happened — I'm all ears." },
+  { id:23, en:"Hit the sack / hay",              ko:"잠자리에 들다",                           ex:"I hit the sack/hay early every night." },
+  { id:24, en:"Heart of gold / stone",           ko:"마음씨가 황금 같다 / 돌처럼 차갑다",      ex:"My girlfriend has a heart of gold/stone." },
+];
+
+/* ═══════════════════════════════════════
+   SESSION & SCORE STATE
+═══════════════════════════════════════ */
+let currentPlayer = '';
+let currentGroup  = '';
+// scores: { playerName: { group, score, quizScore, matchScore } }
+let scores = JSON.parse(localStorage.getItem('idiom_scores') || '{}');
+// groups list
+let groupList = JSON.parse(localStorage.getItem('idiom_groups') || '["모둠 1","모둠 2","모둠 3","모둠 4","모둠 5","모둠 6"]');
+let sbMode = 'individual';
+
+function saveScores() { localStorage.setItem('idiom_scores', JSON.stringify(scores)); }
+function saveGroups() { localStorage.setItem('idiom_groups', JSON.stringify(groupList)); }
+
+function addPoints(pts, source) {
+  if (!currentPlayer) return;
+  if (!scores[currentPlayer]) scores[currentPlayer] = { group: currentGroup, score: 0, quizScore: 0, matchScore: 0 };
+  scores[currentPlayer].score += pts;
+  scores[currentPlayer].group = currentGroup;
+  if (source === 'quiz')  scores[currentPlayer].quizScore  = (scores[currentPlayer].quizScore  || 0) + pts;
+  if (source === 'match') scores[currentPlayer].matchScore = (scores[currentPlayer].matchScore || 0) + pts;
+  saveScores();
+  updateHeaderScore();
+  renderScoreboard();
+  showPopup('+' + pts + '점! ⭐');
+}
+
+function updateHeaderScore() {
+  const pts = currentPlayer && scores[currentPlayer] ? scores[currentPlayer].score : 0;
+  document.getElementById('header-score').textContent = '⭐ ' + pts + '점';
+  if (currentPlayer) document.getElementById('player-name-badge').textContent = '👤 ' + currentPlayer + (currentGroup ? ' (' + currentGroup + ')' : '');
+}
+
+function showPopup(msg) {
+  const el = document.getElementById('score-popup');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1600);
+}
+
+/* ═══════════════════════════════════════
+   SETUP MODAL
+═══════════════════════════════════════ */
+function renderGroupInputs() {
+  const sel = document.getElementById('input-group');
+  sel.innerHTML = '<option value="">-- 모둠을 선택하세요 --</option>' +
+    groupList.map(g => `<option value="${g}">${g}</option>`).join('');
+
+  const container = document.getElementById('group-list');
+  container.innerHTML = groupList.map((g, i) => `
+    <div class="group-row">
+      <input type="text" value="${g}" oninput="groupList[${i}]=this.value; saveGroups(); renderGroupInputs();" placeholder="모둠 이름">
+      <button class="del-btn" onclick="deleteGroup(${i})">✕</button>
+    </div>`).join('');
+}
+
+function addGroupInput() {
+  groupList.push('모둠 ' + (groupList.length + 1));
+  saveGroups();
+  renderGroupInputs();
+}
+
+function deleteGroup(i) {
+  groupList.splice(i, 1);
+  saveGroups();
+  renderGroupInputs();
+}
+
+function startSession() {
+  const name  = document.getElementById('input-name').value.trim();
+  const group = document.getElementById('input-group').value;
+  if (!name)  { alert('이름을 입력해주세요!'); return; }
+  if (!group) { alert('모둠을 선택해주세요!'); return; }
+  currentPlayer = name;
+  currentGroup  = group;
+  if (!scores[name]) scores[name] = { group, score: 0, quizScore: 0, matchScore: 0 };
+  else scores[name].group = group;
+  saveScores();
+  document.getElementById('setup-modal').style.display = 'none';
+  updateHeaderScore();
+  renderScoreboard();
+}
+
+function showSetup() {
+  document.getElementById('input-name').value = currentPlayer;
+  document.getElementById('setup-modal').style.display = 'flex';
+  setTimeout(() => {
+    if (currentGroup) document.getElementById('input-group').value = currentGroup;
+  }, 10);
+}
+
+/* ═══════════════════════════════════════
+   SCOREBOARD
+═══════════════════════════════════════ */
+function switchSbTab(btn, mode) {
+  document.querySelectorAll('.sb-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  sbMode = mode;
+  renderScoreboard();
+}
+
+function renderScoreboard() {
+  const el = document.getElementById('sb-content');
+  if (sbMode === 'individual') {
+    const sorted = Object.entries(scores)
+      .map(([name, d]) => ({ name, ...d }))
+      .sort((a, b) => b.score - a.score);
+    if (!sorted.length) { el.innerHTML = '<div class="sb-empty">아직 기록이 없어요.<br>퀴즈나 매칭 게임을 해보세요!</div>'; return; }
+    const rankClass = ['gold','silver','bronze'];
+    el.innerHTML = sorted.map((p, i) => `
+      <div class="sb-row" style="${p.name === currentPlayer ? 'background:#E1F5F7;border:1.5px solid #028090' : ''}">
+        <div class="sb-rank ${rankClass[i] || ''}">${i + 1}</div>
+        <div class="sb-name">${p.name} <span style="font-size:11px;color:#999;font-weight:400">${p.group || ''}</span></div>
+        <div>
+          <span class="sb-score">${p.score}점</span>
+          <span class="sb-detail">퀴즈 ${p.quizScore||0} · 매칭 ${p.matchScore||0}</span>
+        </div>
+      </div>`).join('');
+  } else {
+    const groupTotals = {};
+    groupList.forEach(g => groupTotals[g] = 0);
+    Object.values(scores).forEach(d => {
+      if (d.group) groupTotals[d.group] = (groupTotals[d.group] || 0) + d.score;
+    });
+    const sorted = Object.entries(groupTotals).sort((a, b) => b[1] - a[1]);
+    if (!sorted.length || sorted.every(s => s[1] === 0)) {
+      el.innerHTML = '<div class="sb-empty">아직 모둠 점수가 없어요!</div>'; return;
+    }
+    const rankClass = ['gold','silver','bronze'];
+    el.innerHTML = sorted.map(([g, pts], i) => `
+      <div class="sb-row" style="${g === currentGroup ? 'background:#E1F5F7;border:1.5px solid #028090' : ''}">
+        <div class="sb-rank ${rankClass[i] || ''}">${i + 1}</div>
+        <div class="sb-name">${g}</div>
+        <span class="sb-score">${pts}점</span>
+      </div>`).join('');
+  }
+}
+
+function resetScores() {
+  if (!confirm('모든 점수를 초기화할까요?')) return;
+  scores = {};
+  saveScores();
+  updateHeaderScore();
+  renderScoreboard();
+}
+
+/* ═══════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════ */
+function shuffle(a) {
+  const b = [...a];
+  for (let i = b.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [b[i], b[j]] = [b[j], b[i]];
+  }
+  return b;
+}
+
+/* ═══════════════════════════════════════
+   LIST
+═══════════════════════════════════════ */
+function initList() {
+  document.getElementById('tab-list').innerHTML =
+    `<input class="list-search" placeholder="이디엄 또는 뜻 검색..." oninput="filterList(this.value)">
+     <div id="list-rows"></div>`;
+  filterList('');
+}
+function filterList(q) {
+  const f = idioms.filter(i => i.en.toLowerCase().includes(q.toLowerCase()) || i.ko.includes(q));
+  document.getElementById('list-rows').innerHTML = f.map(i => `
+    <div class="idiom-row">
+      <div class="idiom-num">${i.id}</div>
+      <div>
+        <div class="idiom-text">${i.en}</div>
+        <div class="idiom-ko">${i.ko}</div>
+        <div class="idiom-ex">"${i.ex}"</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════
+   FLASHCARD
+═══════════════════════════════════════ */
+let fcOrder = [], fcIdx = 0;
+function initFlash() {
+  fcOrder = shuffle([...Array(24).keys()]); fcIdx = 0;
+  document.getElementById('tab-flash').innerHTML = `
+    <div class="fc-progress">
+      <span id="fc-cnt">1 / 24</span>
+      <button class="btn" onclick="shuffleFC()">🔀 섞기</button>
+    </div>
+    <div class="fc-wrap">
+      <div class="fc-card" id="fc-card" onclick="flipFC()">
+        <div class="fc-front"><div class="fc-idiom" id="fc-en"></div><div class="fc-hint">클릭하여 뜻 확인 👆</div></div>
+        <div class="fc-back"><div class="fc-meaning" id="fc-ko"></div><div class="fc-example" id="fc-ex"></div></div>
+      </div>
+    </div>
+    <div class="fc-controls">
+      <button class="btn" onclick="fcMove(-1)">← 이전</button>
+      <button class="btn btn-teal" onclick="fcMove(1)">다음 →</button>
+    </div>`;
+  updateFC();
+}
+function updateFC() {
+  const d = idioms[fcOrder[fcIdx]];
+  document.getElementById('fc-en').textContent = d.en;
+  document.getElementById('fc-ko').textContent = d.ko;
+  document.getElementById('fc-ex').textContent = '"' + d.ex + '"';
+  document.getElementById('fc-cnt').textContent = (fcIdx + 1) + ' / 24';
+  const c = document.getElementById('fc-card');
+  if (c) c.classList.remove('flipped');
+}
+function flipFC() { document.getElementById('fc-card').classList.toggle('flipped'); }
+function fcMove(d) { fcIdx = (fcIdx + d + 24) % 24; updateFC(); }
+function shuffleFC() { fcOrder = shuffle([...Array(24).keys()]); fcIdx = 0; updateFC(); }
+
+/* ═══════════════════════════════════════
+   QUIZ  (정답 1문제당 10점)
+═══════════════════════════════════════ */
+let qPool = [], qIdx = 0, qCorrect = 0, qDone = false;
+const QUIZ_PTS = 10;
+
+function initQuiz() {
+  qPool = shuffle([...idioms]).slice(0, 10).map((item, i) => {
+    const type = i % 2 === 0 ? 'meaning' : 'idiom';
+    let opts, answer;
+    if (type === 'meaning') {
+      answer = item.ko;
+      opts = shuffle([answer, ...shuffle(idioms.filter(x => x.id !== item.id)).slice(0, 3).map(x => x.ko)]);
+    } else {
+      answer = item.en;
+      opts = shuffle([answer, ...shuffle(idioms.filter(x => x.id !== item.id)).slice(0, 3).map(x => x.en)]);
+    }
+    return { item, type, opts, answer };
+  });
+  qIdx = 0; qCorrect = 0; qDone = false;
+  renderQ();
+}
+
+function renderQ() {
+  const el = document.getElementById('tab-quiz');
+  if (qDone) {
+    const total = qCorrect * QUIZ_PTS;
+    const msg = qCorrect >= 9 ? '완벽! 이디엄 마스터! 🏆' : qCorrect >= 7 ? '잘했어요! 조금만 더! 👍' : '더 연습해요! 화이팅! 💪';
+    el.innerHTML = `<div class="result-box">
+      <div class="result-score-big">${qCorrect} / 10</div>
+      <div class="result-msg">${msg}</div>
+      <div class="result-saved">🎯 총 획득 점수: +${total}점 (정답 1개 × ${QUIZ_PTS}점)</div>
+      <button class="btn btn-teal" style="margin-top:18px" onclick="initQuiz()">다시 풀기</button>
+    </div>`;
+    return;
+  }
+  const q = qPool[qIdx];
+  const lbl = q.type === 'meaning' ? '이디엄의 뜻은?' : '뜻에 맞는 이디엄은?';
+  const txt = q.type === 'meaning' ? q.item.en : q.item.ko;
+  el.innerHTML = `
+    <div class="activity-header">
+      <div class="activity-header-left">
+        <span>문제 <span class="score-val">${qIdx + 1} / 10</span></span>
+        <span>현재 <span class="score-val">${qCorrect * QUIZ_PTS}점</span></span>
+      </div>
+      <div style="font-size:12px;color:#888;">정답 1개당 <strong style="color:#028090">${QUIZ_PTS}점</strong></div>
+    </div>
+    <div class="quiz-q">
+      <div class="quiz-type">${lbl}</div>
+      <div class="quiz-qtext">${txt}</div>
+      <div class="quiz-opts" id="qopts">
+        ${q.opts.map(o => `<button class="quiz-opt" onclick="checkQ(this,this.textContent,'${q.answer.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">${o}</button>`).join('')}
+      </div>
+      <div class="quiz-feedback" id="qfb"></div>
+    </div>`;
+}
+
+function checkQ(btn, chosen, answer) {
+  document.querySelectorAll('.quiz-opt').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === answer) b.classList.add('correct');
+  });
+  const fb = document.getElementById('qfb');
+  if (chosen === answer) {
+    btn.classList.add('correct'); qCorrect++;
+    addPoints(QUIZ_PTS, 'quiz');
+    fb.textContent = '정답! +' + QUIZ_PTS + '점 ✓'; fb.className = 'quiz-feedback show ok';
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent = '오답. 정답: ' + answer; fb.className = 'quiz-feedback show no';
+  }
+  setTimeout(() => { qIdx++; if (qIdx >= 10) qDone = true; renderQ(); }, 1500);
+}
+
+/* ═══════════════════════════════════════
+   MATCH  (매칭 1쌍당 15점, 오답 -5점)
+═══════════════════════════════════════ */
+let mLeft = [], mRight = [], mSel = null, mMatched = 0, mAttempts = 0, mMatchPts = 0;
+const MATCH_CORRECT_PTS = 15;
+const MATCH_WRONG_PTS   = -5;
+
+function initMatch() {
+  const pool = shuffle([...idioms]).slice(0, 8);
+  mLeft  = pool.map(i  => ({ id: i.id, text: i.en, matched: false }));
+  mRight = shuffle(pool.map(i => ({ id: i.id, text: i.ko, matched: false })));
+  mSel = null; mMatched = 0; mAttempts = 0; mMatchPts = 0;
+  renderMatch();
+}
+
+function renderMatch() {
+  const el = document.getElementById('tab-match');
+  el.innerHTML = `
+    <div class="activity-header">
+      <div class="match-info">
+        <span>매칭 <strong id="m-m">${mMatched}</strong>/8 &nbsp;·&nbsp; 시도 <strong id="m-a">${mAttempts}</strong>번</span>
+        <span style="font-size:12px;color:#888;">정답 <strong style="color:#028090">+${MATCH_CORRECT_PTS}점</strong> · 오답 <strong style="color:#C0392B">${MATCH_WRONG_PTS}점</strong></span>
+      </div>
+      <button class="btn" onclick="initMatch()">새 게임</button>
+    </div>
+    <div class="match-grid">
+      <div>
+        <div class="match-col-title">이디엄</div>
+        <div id="m-left">${mLeft.map((c, i) => `<div class="match-card${c.matched ? ' matched' : ''}" id="ml-${i}" onclick="selCard('L',${i})">${c.text}</div>`).join('')}</div>
+      </div>
+      <div>
+        <div class="match-col-title">뜻</div>
+        <div id="m-right">${mRight.map((c, i) => `<div class="match-card${c.matched ? ' matched' : ''}" id="mr-${i}" onclick="selCard('R',${i})">${c.text}</div>`).join('')}</div>
+      </div>
+    </div>
+    <div id="m-done" style="display:none" class="match-done"></div>`;
+}
+
+function selCard(side, idx) {
+  const arr = side === 'L' ? mLeft : mRight;
+  if (arr[idx].matched) return;
+  const eid = (side === 'L' ? 'ml-' : 'mr-') + idx;
+  if (mSel) {
+    if (mSel.side === side) {
+      document.getElementById((mSel.side === 'L' ? 'ml-' : 'mr-') + mSel.idx).classList.remove('selected');
+      mSel = { side, idx };
+      document.getElementById(eid).classList.add('selected');
+      return;
+    }
+    mAttempts++;
+    const li = side === 'R' ? mSel.idx : idx;
+    const ri = side === 'R' ? idx : mSel.idx;
+    if (mLeft[li].id === mRight[ri].id) {
+      mLeft[li].matched = true; mRight[ri].matched = true; mMatched++;
+      ['ml-' + li, 'mr-' + ri].forEach(id => {
+        const e = document.getElementById(id);
+        e.classList.remove('selected'); e.classList.add('matched');
+      });
+      document.getElementById('m-m').textContent = mMatched;
+      document.getElementById('m-a').textContent = mAttempts;
+      addPoints(MATCH_CORRECT_PTS, 'match');
+      if (mMatched === 8) {
+        const d = document.getElementById('m-done');
+        d.style.display = 'block';
+        d.textContent = '모두 완성! ' + mAttempts + '번 만에 성공! 🎉';
+      }
+    } else {
+      const le = document.getElementById('ml-' + li), re = document.getElementById('mr-' + ri);
+      le.classList.add('wrong-flash'); re.classList.add('wrong-flash');
+      document.getElementById('m-a').textContent = mAttempts;
+      addPoints(MATCH_WRONG_PTS, 'match');
+      setTimeout(() => { le.classList.remove('wrong-flash', 'selected'); re.classList.remove('wrong-flash', 'selected'); }, 700);
+    }
+    mSel = null;
+  } else {
+    mSel = { side, idx };
+    document.getElementById(eid).classList.add('selected');
+  }
+}
+
+/* ═══════════════════════════════════════
+   TAB SWITCH
+═══════════════════════════════════════ */
+function switchTab(btn, tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  btn.classList.add('active');
+  if (tab === 'list')  initList();
+  else if (tab === 'flash') initFlash();
+  else if (tab === 'quiz')  initQuiz();
+  else if (tab === 'match') initMatch();
+}
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+renderGroupInputs();
+renderScoreboard();
+updateHeaderScore();
+initList();
+</script>
+</body>
+</html>
